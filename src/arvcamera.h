@@ -60,6 +60,7 @@ ArvStream *	arv_camera_create_stream	(ArvCamera *camera, ArvStreamCallback callb
 const char *	arv_camera_get_vendor_name	(ArvCamera *camera);
 const char *	arv_camera_get_model_name	(ArvCamera *camera);
 const char *	arv_camera_get_device_id	(ArvCamera *camera);
+const char *    arv_camera_get_firmware_version	(ArvCamera *camera);
 
 /* Image format control */
 

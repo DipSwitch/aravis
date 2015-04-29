@@ -178,6 +178,23 @@ arv_camera_get_device_id (ArvCamera *camera)
 	return arv_device_get_string_feature_value (camera->priv->device, "DeviceID");
 }
 
+/**
+ * arv_camera_get_firmware_version:
+ * @camera: a #ArvCamera
+ *
+ * Returns: the camera device firmware version.
+ *
+ * Since: 0.5.0
+ */
+
+const char *
+arv_camera_get_firmware_version	(ArvCamera *camera)
+{
+	g_return_val_if_fail (ARV_IS_CAMERA (camera), NULL);
+
+	return arv_device_get_string_feature_value (camera->priv->device, "DeviceFirmwareVersion");
+}
+
 /* Image format control */
 
 /**
