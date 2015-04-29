@@ -696,7 +696,7 @@ arv_camera_set_frame_rate (ArvCamera *camera, double frame_rate)
 			arv_device_set_string_feature_value (camera->priv->device, "AcquisitionFrameRateAuto", "Off");
 			arv_device_set_float_feature_value (camera->priv->device, "AcquisitionFrameRate", frame_rate);
 			break;
-		case ARV_CAMERA_SERIES_AVT:
+		case ARV_CAMERA_VENDOR_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			arv_device_set_string_feature_value (camera->priv->device, "TriggerSelector", "FrameStart");
@@ -743,7 +743,7 @@ arv_camera_get_frame_rate (ArvCamera *camera)
 			} else
 				return arv_device_get_float_feature_value (camera->priv->device, "FPS");
 		case ARV_CAMERA_VENDOR_POINT_GREY:
-		case ARV_CAMERA_SERIES_AVT:
+		case ARV_CAMERA_VENDOR_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			return arv_device_get_float_feature_value (camera->priv->device,
@@ -809,7 +809,7 @@ arv_camera_get_frame_rate_bounds (ArvCamera *camera, double *min, double *max)
 			arv_device_get_float_feature_bounds (camera->priv->device, "AcquisitionFrameRateAbs", min, max);
 			break;
 		case ARV_CAMERA_VENDOR_POINT_GREY:
-		case ARV_CAMERA_SERIES_AVT:
+		case ARV_CAMERA_VENDOR_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			arv_device_get_float_feature_bounds (camera->priv->device,
@@ -1225,7 +1225,7 @@ arv_camera_is_frame_rate_available (ArvCamera *camera)
 		case ARV_CAMERA_VENDOR_TIS:
 			return arv_device_get_feature (camera->priv->device, "FPS") != NULL;
 		case ARV_CAMERA_VENDOR_POINT_GREY:
-		case ARV_CAMERA_SERIES_AVT:
+		case ARV_CAMERA_VENDOR_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			return arv_device_get_feature (camera->priv->device,
