@@ -67,7 +67,8 @@ typedef enum {
 	ARV_CAMERA_VENDOR_DALSA,
 	ARV_CAMERA_VENDOR_PROSILICA,
 	ARV_CAMERA_VENDOR_TIS,
-	ARV_CAMERA_VENDOR_POINT_GREY
+	ARV_CAMERA_VENDOR_POINT_GREY,
+	ARV_CAMERA_VENDOR_AVT
 } ArvCameraVendor;
 
 typedef enum {
@@ -78,7 +79,8 @@ typedef enum {
 	ARV_CAMERA_SERIES_DALSA,
 	ARV_CAMERA_SERIES_PROSILICA,
 	ARV_CAMERA_SERIES_TIS,
-	ARV_CAMERA_SERIES_POINT_GREY
+	ARV_CAMERA_SERIES_POINT_GREY,
+	ARV_CAMERA_SERIES_AVT
 } ArvCameraSeries;
 
 static GObjectClass *parent_class = NULL;
@@ -694,6 +696,7 @@ arv_camera_set_frame_rate (ArvCamera *camera, double frame_rate)
 			arv_device_set_string_feature_value (camera->priv->device, "AcquisitionFrameRateAuto", "Off");
 			arv_device_set_float_feature_value (camera->priv->device, "AcquisitionFrameRate", frame_rate);
 			break;
+		case ARV_CAMERA_SERIES_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			arv_device_set_string_feature_value (camera->priv->device, "TriggerSelector", "FrameStart");
@@ -740,6 +743,7 @@ arv_camera_get_frame_rate (ArvCamera *camera)
 			} else
 				return arv_device_get_float_feature_value (camera->priv->device, "FPS");
 		case ARV_CAMERA_VENDOR_POINT_GREY:
+		case ARV_CAMERA_SERIES_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			return arv_device_get_float_feature_value (camera->priv->device,
@@ -805,6 +809,7 @@ arv_camera_get_frame_rate_bounds (ArvCamera *camera, double *min, double *max)
 			arv_device_get_float_feature_bounds (camera->priv->device, "AcquisitionFrameRateAbs", min, max);
 			break;
 		case ARV_CAMERA_VENDOR_POINT_GREY:
+		case ARV_CAMERA_SERIES_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			arv_device_get_float_feature_bounds (camera->priv->device,
@@ -1220,6 +1225,7 @@ arv_camera_is_frame_rate_available (ArvCamera *camera)
 		case ARV_CAMERA_VENDOR_TIS:
 			return arv_device_get_feature (camera->priv->device, "FPS") != NULL;
 		case ARV_CAMERA_VENDOR_POINT_GREY:
+		case ARV_CAMERA_SERIES_AVT:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			return arv_device_get_feature (camera->priv->device,
@@ -1721,6 +1727,9 @@ arv_camera_constructor (GType gtype, guint n_properties, GObjectConstructParam *
 	} else if (g_strcmp0 (vendor_name, "Point Grey Research") == 0) {
 		vendor = ARV_CAMERA_VENDOR_POINT_GREY;
 		series = ARV_CAMERA_SERIES_POINT_GREY;
+	} else if (g_strcmp0 (vendor_name, "Allied Vision Technologies") == 0) {
+		vendor = ARV_CAMERA_VENDOR_AVT;
+		series = ARV_CAMERA_SERIES_AVT;
 	} else {
 		vendor = ARV_CAMERA_VENDOR_UNKNOWN;
 		series = ARV_CAMERA_SERIES_UNKNOWN;
