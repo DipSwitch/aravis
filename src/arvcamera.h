@@ -61,7 +61,7 @@ const char *	arv_camera_get_vendor_name	(ArvCamera *camera);
 const char *	arv_camera_get_model_name	(ArvCamera *camera);
 const char *	arv_camera_get_device_id	(ArvCamera *camera);
 const char *	arv_camera_get_device_part_number	(ArvCamera *camera);
-const char *	arv_camera_get_device_mac_address	(ArvCamera *camera);
+guint64			arv_camera_get_device_mac_address(ArvCamera *camera);
 const char *    arv_camera_get_firmware_version	(ArvCamera *camera);
 
 /* Image format control */
@@ -136,6 +136,10 @@ int 		arv_camera_gv_get_current_stream_channel(ArvCamera *camera);
 
 void		arv_camera_gv_set_packet_delay		(ArvCamera *camera, gint64 delay_ns);
 gint64 		arv_camera_gv_get_packet_delay 		(ArvCamera *camera);
+
+gboolean	arv_camera_gv_supports_adjust_packet_size	(ArvCamera *camera);
+void		arv_camera_gv_adjust_packet_size			(ArvCamera *camera);
+
 void 		arv_camera_gv_set_packet_size 		(ArvCamera *camera, gint packet_size);
 gint		arv_camera_gv_get_packet_size		(ArvCamera *camera);
 

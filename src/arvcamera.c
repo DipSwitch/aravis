@@ -92,6 +92,7 @@ struct _ArvCameraPrivate {
 	ArvCameraVendor vendor;
 	ArvCameraSeries series;
 
+	gboolean has_adjust_packet_size;
 	gboolean use_gain_raw;
 	gboolean use_exposure_time_abs;
 	gboolean use_acquisition_frame_rate_abs;
@@ -204,12 +205,12 @@ arv_camera_get_device_part_number(ArvCamera *camera)
  * Since: 0.5.0
  */
 
-const char *
+guint64
 arv_camera_get_device_mac_address(ArvCamera *camera)
 {
 	g_return_val_if_fail (ARV_IS_CAMERA (camera), NULL);
 
-	return arv_device_get_string_feature_value (camera->priv->device, "GetDeviceMACAddress");
+	return arv_device_get_integer_feature_value(camera->priv->device, "GevDeviceMACAddress");
 }
 
 /**
@@ -859,8 +860,14 @@ arv_camera_get_frame_rate_bounds (ArvCamera *camera, double *min, double *max)
 		case ARV_CAMERA_VENDOR_PROSILICA:
 			arv_device_get_float_feature_bounds (camera->priv->device, "AcquisitionFrameRateAbs", min, max);
 			break;
-		case ARV_CAMERA_VENDOR_POINT_GREY:
 		case ARV_CAMERA_VENDOR_AVT:
+			if (min)
+				*min = 0.0223517421238384;
+			if (max)
+				*max = arv_device_get_float_feature_value(camera->priv->device, "AcquisitionFrameRateLimit");
+			break;
+
+		case ARV_CAMERA_VENDOR_POINT_GREY:
 		case ARV_CAMERA_VENDOR_DALSA:
 		case ARV_CAMERA_VENDOR_UNKNOWN:
 			arv_device_get_float_feature_bounds (camera->priv->device,
@@ -1533,6 +1540,43 @@ arv_camera_gv_get_packet_size (ArvCamera *camera)
 }
 
 /**
+ * arv_camera_gv_supports_adjust_packet_size:
+ * @camera: a #ArvCamera
+ *
+ * Returns: If the camera supports the Adjust Packet Size command.
+ *
+ * Since: 0.5.0
+ */
+
+gboolean
+arv_camera_gv_supports_adjust_packet_size (ArvCamera *camera)
+{
+	g_return_val_if_fail (arv_camera_is_gv_device (camera), FALSE);
+
+	return (camera->priv->has_adjust_packet_size);
+}
+
+/**
+ * arv_camera_gv_supports_adjust_packet_size:
+ * @camera: a #ArvCamera
+ *
+ * This functions makes the camera device automatically set the ideal packet size.
+ *
+ * Since: 0.5.0
+ */
+
+void
+arv_camera_gv_adjust_packet_size (ArvCamera *camera)
+{
+	g_return_if_fail (arv_camera_is_gv_device (camera));
+
+	if (!camera->priv->has_adjust_packet_size)
+		return;
+
+	arv_device_execute_command(camera->priv->device, "GVSPAdjustPacketSize");
+}
+
+/**
  * arv_camera_set_chunk_mode:
  * @camera: a #ArvCamera
  * @is_active: wether to enable chunk data mode
@@ -1789,6 +1833,7 @@ arv_camera_constructor (GType gtype, guint n_properties, GObjectConstructParam *
 	camera->priv->vendor = vendor;
 	camera->priv->series = series;
 
+	camera->priv->has_adjust_packet_size = ARV_IS_GC_COMMAND(arv_device_get_feature(camera->priv->device, "GVSPAdjustPacketSize"));
 	camera->priv->use_gain_raw = !ARV_IS_GC_FLOAT (arv_device_get_feature (camera->priv->device, "Gain"));
 	camera->priv->use_exposure_time_abs = !ARV_IS_GC_FLOAT (arv_device_get_feature (camera->priv->device, "ExposureTime"));
 	camera->priv->use_acquisition_frame_rate_abs = !ARV_IS_GC_FLOAT (arv_device_get_feature (camera->priv->device,
